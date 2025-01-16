@@ -8,22 +8,30 @@ namespace Skyline_bitrate_calculator
     {
         static void Main(string[] args)
         {
+            // This file will be in Skyline bitrate-calculator\Skyline bitrate-calculator\bin\Debug\net8.0
             string filePath = @"measurement.json";
+            // Set pooling rate, value is in Hz
             int poolingRate = 2;
 
             try
             {
-                ReadJsonFile(filePath, poolingRate);
+                ProcessJsonFile(filePath, poolingRate);
             }
             catch (Exception e)
             {
                 Console.WriteLine($"An error occurred: {e.Message}\n\n");
             }
+
+
+            Console.ReadKey();
         }
 
-        static void ReadJsonFile(string filePath , int poolingRate)
+        static void ProcessJsonFile(string filePath , int poolingRate)
         {
+            // Read all of the text from the file, this function will open the file copy the contents and close the file
             string json = File.ReadAllText(filePath);
+
+            // Json data will deserialize into Data properties
             NetworkDevice device = JsonSerializer.Deserialize<NetworkDevice>(json);
             
             long RxBitRate = CalculateBitrate(poolingRate, device.NIC[0].Rx);
@@ -31,10 +39,12 @@ namespace Skyline_bitrate_calculator
             
             Console.WriteLine( device.NetworkDeviceToString(RxBitRate, TxBitRate) );
             
-            Console.ReadKey();
         }
+
+        // Calculation of the bitrate
         static long CalculateBitrate(int pooling_rate, string TransferedBitsString)
         {
+            // Parsig the string value to long int, the value of Rx is to big for int
             return Int64.Parse(TransferedBitsString) * pooling_rate * 8;
         }
     }
